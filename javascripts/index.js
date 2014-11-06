@@ -8,9 +8,9 @@
     $(function(){
         //events
         $('#blogs').on('click',function(e){
-            e.preventDefault();
-
             $('#blogList').show();
+
+            return false;
         });
 
     });
