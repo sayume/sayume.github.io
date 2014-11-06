@@ -1,7 +1,7 @@
 /**
  * Created by sayume on 11/6/14.
  */
-(function(undefined){
+(function(){
 
     'use strict';
 
@@ -24,4 +24,4 @@
 
     });
 
-})($,undefined);
+})();
