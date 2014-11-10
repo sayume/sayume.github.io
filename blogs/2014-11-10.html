@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<h3>Deploy node application with docker</h3>
+<p>Refer to the node official site, you can see how to hold a node app in an container, and we can also follow the steps
+provided by the official site of node.</p>
+<p>First, you create your own node app, I created an express app named helloWorld as example. Then write the docker file for it,
+you can find a very short version of it on the official site:</p>
+<div style="margin:10px;"><image style="width:500px;" src="../images/Selection_007.png"/></div>
+<p>The first line means you use node 1.0 to build the image, the second line means you expose port 3000 to the host machine.</p>
+<p>Then go to the directory and  use the following command to build the image "hello World":</p>
+<pre>
+    sudo docker build -t helloworld helloWorld/
+</pre>
+<p>And use this command to start the image,of course, you have to configure the start script and dependencies in
+    the package.json file:</p>
+<pre>
+    docker run -it --rm --name helloWorld -p 3000:3000 helloworld
+</pre>
+<p>We start a container named helloWorld.</p>
+<p>With "docker ps" command we can check the container is started or not:</p>
+<div style="margin:10px;"><image style="width:500px;" src="../images/Selection_002.png"/></div>
+<p>Great! the container is already started, let's check it in the browser.</p>
+<div style="margin:10px;"><image style="width:500px;" src="../images/Selection_008.png"/></div>
+<p>We see the familiar express home page. For more details of the docker node image, please refer to the official site.</p>
+</body>
+</html>

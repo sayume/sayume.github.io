@@ -28,6 +28,12 @@
             $('#content').load('blogs/2014-11-6.html');
         });
 
+        $('#2014-11-10').on('click',function(e){
+            e.preventDefault();
+
+            $('#content').load('blogs/2014-11-10.html');
+        });
+
     });
 
 })();
