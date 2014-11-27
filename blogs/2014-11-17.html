@@ -5,10 +5,147 @@
     <title></title>
 </head>
 <body>
-<h3>为什么说callback是最好的并行编程模式</h3>
+<h3>为什么说callback是最好的并行处理模式</h3>
 <p>
-    近日某大神从大热的nodejs阵营转投go阵营之前说了一句话，大致的意思是，虽然他已经转投go阵营，但是他还是认为异步是处理
-    多进程的最佳方式。等等，nodejs不是异步单线程么，怎么会处理多进程？
+    近日某大神从大热的nodejs阵营转投go阵营之前说了一句话，大致的意思是，虽然他已经转投go阵营，但是他还是认为异步callback是处理
+    并行的最佳方式。那么问题来了，既然说它好，肯定有一定的理由。首先我们来看看nodejs的并行处理：
+</p>
+<div style="margin:10px;"><image style="width:500px;" src="../images/event_model.png"/></div>
+<p>
+    nodejs要处理一些时间比较长的事情，先注册一个callback，当事情处理完成之后触发一个event交给event loop处理，最后调出相应的
+    callback执行，流程简洁明了。等等，这么一个流程是不是有点眼熟，好像在哪里见过，跑去android developer官网，发现了这么一段示例代码
+    讲的是AsyncTask：
+</p>
+<pre>
+    private class DownloadFilesTask extends AsyncTask<URL, Integer, Long> {
+     protected Long doInBackground(URL... urls) {
+         int count = urls.length;
+         long totalSize = 0;
+         for (int i = 0; i < count; i++) {
+             totalSize += Downloader.downloadFile(urls[i]);
+             publishProgress((int) ((i / (float) count) * 100));
+             // Escape early if cancel() is called
+             if (isCancelled()) break;
+         }
+         return totalSize;
+     }
+
+     protected void onProgressUpdate(Integer... progress) {
+         setProgressPercent(progress[0]);
+     }
+
+     protected void onPostExecute(Long result) {
+         showDialog("Downloaded " + result + " bytes");
+     }
+ }
+</pre>
+<p>
+    这不就是javascript的异步模式吗，onProgressUpdate和onPostExecute都是事件的callback，只不过这里面分得比较细。然后仔细
+    查了查AsyncTask抽象类，运用的就是template设计模式，javascript表示毫无压力。javascript 需要并行处理的场景是在同一时间
+    处理大量的http request/response，同时还不能阻塞页面UI的呈现，在这种场景下运用异步callback方式简直是自然而然的事情。
+</p>
+<p>
+    虽然异步在处理http request.response方面很有效，但是有一些需要同步处理的场景该怎么办呢，例如这样一个很常见的场景：你
+    向服务端同时发起了数个请求，最终你要统计一下所有请求的结果。那么问题来了，请求之间是异步的，你怎么知道所有的请求都完
+    成了呢？不妨先去java里面找一找答案，下面是一段关于condition lock的示例代码：
+</p>
+<pre>
+     class BoundedBuffer {
+   final Lock lock = new ReentrantLock();
+   final Condition notFull  = lock.newCondition();
+   final Condition notEmpty = lock.newCondition();
+
+   final Object[] items = new Object[100];
+   int putptr, takeptr, count;
+
+   public void put(Object x) throws InterruptedException {
+     lock.lock();
+     try {
+       while (count == items.length)
+         notFull.await();
+       items[putptr] = x;
+       if (++putptr == items.length) putptr = 0;
+       ++count;
+       notEmpty.signal();
+     } finally {
+       lock.unlock();
+     }
+   }
+
+   public Object take() throws InterruptedException {
+     lock.lock();
+     try {
+       while (count == 0)
+         notEmpty.await();
+       Object x = items[takeptr];
+       if (++takeptr == items.length) takeptr = 0;
+       --count;
+       notFull.signal();
+       return x;
+     } finally {
+       lock.unlock();
+     }
+   }
+ }
+</pre>
+<p>
+    简单说来就是用一个锁锁住一个公共资源（一个数组），然后让不同的进程同时读写一个数组，如果数组为空就发出一个信号该数组空了，
+    禁止删除，如果满了就发出另一个信号，该数组满了，禁止写入。看起来有点复杂，但是为了防止race condition只能这么做。如果
+    是javascript这种情况该怎么写，可以仿照上面写出这么一段代码：
+</p>
+<pre>
+    var array=[],//限制长度的数组
+        isEmpty=true,
+        isFull=false;
+
+    //假设add和delete都是异步的
+    function add(item, function(){
+       checkArray();
+    });
+
+    function delete(item, function(){
+       checkArray();
+    }
+
+    function checkArray(){
+      isEmpty=false;
+      isFull=false;
+      if(array.length===0)isEmpty=true;
+      if(array.length===limit)isFull=true;
+    }
+</pre>
+<p>
+    只要在每次操作之后检查一下数组就可以了，甚至可以把checkArray的逻辑移到callback里面，因为javascript只有一个主进程，让
+    主进程管理公共的资源就可以保持数据的同步，不用lock来lock去，省去了无数麻烦，也没有race condition的烦恼。那么很自然的，
+    统计callback这么一个功能就可以写成这么一个形式：
+</p>
+<pre>
+    countCallback();//在所有callback完成后执行
+    var condition=totalCallbackLength;
+
+    callback1(){
+      ...
+      condition--;
+      if(condition===0)countCallback();
+    }
+
+    callback2(){
+      ...
+      condition--;
+      if(condition===0)countCallback();
+    }
+
+    ...
+</pre>
+<p>
+    当然，也可以通过注册一个event来搞定上面一段，不过原理是一样的。
+</p>
+<p>
+    但是，到了这里，新的问题又来了，nodejs是单线程，它怎么利用多核处理器，虽然在编程模型上带来了优势，但是性能上的优势就
+    散失掉了吗？事实上，这个问题可以分两个层次看：首先，在分布式服务器集群中，http request是分发到不同的机器上，在这个层次
+    上这一问题已经得到部分处理，其次，nodejs自带cluster模块，可以通过cluster将请求分发到不同的实例中，当然还有更高大上的
+    方法，将nodejs app装进container，然后在container这么一个层次上处理负载均衡，所以说单线程的nodejs并不会丧失多核的性能
+    优势，反而由于编程模型的优势而带来开发效率的提高。
 </p>
 </body>
 </html>

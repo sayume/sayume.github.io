@@ -34,6 +34,12 @@
             $('#content').load('blogs/2014-11-10.html');
         });
 
+        $('#2014-11-17').on('click',function(e){
+            e.preventDefault();
+
+            $('#content').load('blogs/2014-11-17.html');
+        });
+
     });
 
 })();
