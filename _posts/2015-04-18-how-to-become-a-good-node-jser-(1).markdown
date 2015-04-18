@@ -12,29 +12,29 @@ below:
 
 servers:
 
-[express] fast build for websites
+[express]    -fast build for websites
 
-[restify] API server
+[restify]    -API server
 
-[koa] es6 version server
+[koa] es6    -version server
 
 tools:
 
-[grunt] auto task runner of node
+[grunt]    -auto task runner of node
 
-[underscore] object array utility
+[underscore]    -object array utility
 
 TDD:
 
-[mocha] test framework for node
+[mocha]    -test framework for node
 
-[jasmine-node] use the same concepts and settings of mocha
+[jasmine-node]    -use the same concepts and settings of mocha
 
 system help:
 
-[fs-extra] expand methods the node core module 'fs'
+[fs-extra]    -expand methods the node core module 'fs'
 
-[adm-zip] module to make zip, it is buggy
+[adm-zip]    -module to make zip, it is buggy
 
 dbs:
 
@@ -48,17 +48,17 @@ dbs:
 
 application manager:
 
-[pm2] manage node apps and provide performance profiling
+[pm2]    -manage node apps and provide performance profiling
 
-[forever] simple node app starter
+[forever]    -simple node app starter
 
 debug tool:
 
-[node-inspector] not good enough node debugger
+[node-inspector]    -not good enough node debugger
 
 es6 compile tools:
 
-[traceur] tool to provide es6 feature for your code, will be replace by the gradually support of es6
+[traceur]    -tool to provide es6 feature for your code, will be replace by the gradually support of es6
 
 
 [express]:  https://github.com/strongloop/express
