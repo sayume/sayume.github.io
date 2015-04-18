@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Why I don't like angular"
-date:   2015-02-20 19:48:31
+date:   2015-02-22
 categories: jekyll update
 ---
 Recently I got a chance to use angularjs in one of my project I worked on. I heard about angular for a period of time
