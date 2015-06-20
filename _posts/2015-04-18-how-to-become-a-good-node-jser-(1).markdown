@@ -16,7 +16,7 @@ servers:
 
 [restify]    -API server
 
-[koa] es6    -version server
+[koa]    -next generation version server
 
 tools:
 
@@ -59,6 +59,34 @@ debug tool:
 es6 compile tools:
 
 [traceur]    -tool to provide es6 feature for your code, will be replace by the gradually support of es6
+
+[es6-promise]     -light lib to use es6 promise in es5
+
+orm：
+
+[sails]   -db connection mapping
+
+[waterline]    -object rational mapping
+
+command:
+
+[commander]    -write js command
+
+execution flow:
+
+[async]      -async work flow utility
+
+[bluebird]     -transfer async functions into promise
+
+frontend tools:
+
+[browserify]    -share backend modules with frontend, frontend js compile tool
+
+web frameworks:
+
+[react]    -facebook is good
+
+[angular]     -not a very good choice
 
 
 [express]:  https://github.com/strongloop/express

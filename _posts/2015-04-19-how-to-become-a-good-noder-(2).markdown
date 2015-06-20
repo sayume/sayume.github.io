@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "How to become a good node.js-er (1)"
+title:  "How to become a good node.js-er (2)"
 date:   2015-04-18
 categories: jekyll update
 ---
