@@ -49,5 +49,5 @@ nodejs的公司之一，在nodejs方面已经有了非常丰富的实战经验�
 或者说资源最优化配置的服务才是“最好”的服务，这就是为什么有些看起来很烂的架构，看起来效率很差的语言在今天仍然有不小的用武之地，单纯追求快和好
 并不应该是一个后端架构师的目标。
 
-[Linkedin架构这十年] http://colobu.com/2015/07/24/brief-history-scaling-linkedin/
+[Linkedin架构这十年]:   http://colobu.com/2015/07/24/brief-history-scaling-linkedin/
 
